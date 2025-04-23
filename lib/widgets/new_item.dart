@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
-import 'package:shopping_list/models/grocery_item.dart';
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -20,11 +19,11 @@ class _NewItemState extends State<NewItem> {
   var _enteredQuantity = 1;
   var _selectedCategory = categories[Categories.vegetables]!;
 
-  void _saveItem() {
+  void _saveItem() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final url = Uri.https('my-dummy-url.com', 'shopping-list.json');
-      http.post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -33,7 +32,11 @@ class _NewItemState extends State<NewItem> {
           "category": _selectedCategory.title,
         }),
       );
-      // Navigator.of(context).pop();
+      print(response.body);
+      if (!mounted) {
+        return;
+      }
+      Navigator.of(context).pop();
     }
   }
 
